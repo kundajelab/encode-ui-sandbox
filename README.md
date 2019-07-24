@@ -1,3 +1,3 @@
-# scrna-analyzer
+# ENCODE Search/UI Demo
 
-Staging area for single-cell graph algorithms.
+Code for ENCODE UI/Search prototypes.
