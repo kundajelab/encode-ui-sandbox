@@ -3,15 +3,15 @@ import numpy as np, pandas as pd
 
 params = {}
 
-params['title'] = "Myogenesis cell population browser"
+params['title'] = "ENCODE 3 experiment browser"
 
 
 _DEPLOY_LOCALLY = True
 
 if not _DEPLOY_LOCALLY:
-    data_pfx = '/var/www/myogenesis-browser/'
+    data_pfx = '/var/www/encode-ui-sandbox/'
 else:
-    data_pfx = '/Users/akshay/github/myogenesis-browser/'
+    data_pfx = '/Users/akshay/github/encode-ui-sandbox/'
 
 params['plot_data_df_path'] = [data_pfx + "data/mmyo_young_annot.csv"]
 # params['adj_mat_path'] = 'nest_adjmat.npz'
