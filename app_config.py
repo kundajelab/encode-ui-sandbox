@@ -13,18 +13,18 @@ if not _DEPLOY_LOCALLY:
 else:
     data_pfx = '/Users/akshay/github/encode-ui-sandbox/'
 
-params['plot_data_df_path'] = [data_pfx + "data/mmyo_young_annot.csv"]
-# params['adj_mat_path'] = 'nest_adjmat.npz'
-params['raw_data_path'] = data_pfx + "data/will_annot_noProg_proc.csv.gz"
+params['plot_data_df_path'] = [data_pfx + "data/experiments.csv"]
+params['adj_mat_path'] = data_pfx + 'data/encode3_6870_10nn.npz'
+#params['raw_data_path'] = data_pfx + "data/will_annot_noProg_proc.csv.gz"
 
-params['feat_names_path'] = data_pfx + "data/feat_names.npy"
-params['raw_datamat_path'] = data_pfx + "data/raw_data_young.npz"
-params['default_color_var'] = 'cell_types'
-params['display_ID_var'] = 'cell_IDs'
+# params['feat_names_path'] = data_pfx + "data/feat_names.npy"
+# params['raw_datamat_path'] = data_pfx + "data/raw_data_young.npz"
+params['default_color_var'] = 'Dummy'#'Biosample'
+params['display_ID_var'] = 'Experiment_name'
 
 
 # params['dataset_options'] = [x.split('/')[-1].split('.')[0] for x in params['plot_data_df_path']]
-params['dataset_options'] = ["Young mice Drop-seq, >7K cells annotated"]
+params['dataset_options'] = [""]
 
 params['gene2go_path'] = data_pfx + 'gene2go'
 params['go_obo_path'] = data_pfx + 'data/go-basic.obo'
@@ -36,7 +36,8 @@ params['hm_colorvar_name'] = 'Log expr.'
 params['hm_diverging'] = False
 
 params['legendgroup'] = True
-params['display_coordinates'] = { 'x': 'hUMAP_x',  'y': 'hUMAP_y' }
+params['display_coordinates'] = { 'x': 'umap_raw_X',  'y': 'umap_raw_Y' }
+#params['display_coordinates'] = { 'x': 'umap_graph_X',  'y': 'umap_graph_Y' }
 params['qnorm_plot'] = True
 params['hm_qnorm_plot'] = False
 params['continuous_color'] = False
