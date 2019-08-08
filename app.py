@@ -2,7 +2,6 @@
 """
 Runner for an interactive browser / analyzer.
 Dash application (Dash [Python] <- Plotly <- React.js <- D3.js)
-Author: Akshay Balsubramani
 """
 
 import base64, io, os, time, json
@@ -36,14 +35,13 @@ raw_data = sp.sparse.load_npz(app_config.params['raw_datamat_path'])
 
 app = dash.Dash(__name__)
 if not app_config._DEPLOY_LOCALLY:
-    app.config.update({'routes_pathname_prefix':'/myogenesis/', 'requests_pathname_prefix':'/myogenesis/'})
+    app.config.update({'routes_pathname_prefix':'/ENCODE_databrowser/', 'requests_pathname_prefix':'/ENCODE_databrowser/'})
 
 server=app.server
 app.layout = building_block_divs.create_div_mainapp(
     point_names, 
     feat_names, 
-    more_colorvars=additional_colorvars, 
-    align_options_list=['Unaligned', 'Aligned']
+    more_colorvars=additional_colorvars
 )
 
 
