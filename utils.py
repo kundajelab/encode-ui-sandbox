@@ -44,11 +44,8 @@ Functions for manipulating neighborhoods on the graph.
 def get_neighbors(query_expt_index, embeddings, experiments):
     neighbors = experiments[numpy.where(embeddings[query_expt_index,:] != 0)]
     print("Query: {} in {}".format(experiments[query_expt_index][1], cell_type_map[experiments[query_expt_index][0]]))
-    print("Neighbors: (Cell-type ==> Assay)")
-    for n in neighbors:
-        #print('{}\t\t\t{}'.format(cell_type_map[n[0]], n[1]))
-        print('{:>12}\t\t{:>12}'.format(cell_type_map[n[0]], n[1]))
-    #Summarize
+#     for n in neighbors:
+#         print('{:>12}\t\t{:>12}'.format(cell_type_map[n[0]], n[1]))
     print("===========SUMMARY=============")
     print("Neighbor Assay\t\t\tNeighbor Count")
     uniq_assays = numpy.unique(neighbors[:,1], return_counts=True)

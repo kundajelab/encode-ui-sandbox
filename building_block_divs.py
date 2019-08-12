@@ -293,7 +293,7 @@ def create_div_select_dataset(dataset_options):
                 className='four columns', 
                 children=[
                     html.P(
-                        "Browse dataset: ", 
+                        "Browse embedding: ", 
                         style=style_text_box
                     )], 
                 style={'padding-top': '10px'}
@@ -310,44 +310,6 @@ def create_div_select_dataset(dataset_options):
             )], 
         style=style_outer_dialog_box
     )
-
-
-div_reviz_scatter = html.Div(
-    className='row', 
-    children=[
-        html.Div(
-            className='four columns', 
-            children=[ 
-                dcc.Checklist(
-                    id='reviz-status', 
-                    options=[
-                        {'label': 'Visualize selection', 'value': 'viz'}
-                    ],
-                    value=[], 
-                    style={
-                        'textAlign': 'center', 
-                        # 'width': '80%', 
-                        'color': app_config.params['font_color']
-                    }
-                )], 
-            style={'padding-top': '10px'}
-        ), 
-        html.Div(
-            className='eight columns', 
-            children=[
-                dcc.RadioItems(
-                    id='reviz-method-selection', 
-                    options=[ {'label': v, 'value': v} for v in ['dummy', 'UMAP'] ], 
-                    style=legend_font_macro, 
-                    labelStyle={
-                        'display': 'inline-block', 
-                        'margin-right': '5px'
-                    }, 
-                    value='dummy'
-                )], 
-            style={'padding-top': '10px'}
-        )]
-)
 
 
 
@@ -438,7 +400,7 @@ def create_div_cosmetic_panel():
 # ==================================================================
 
 
-def create_div_mainctrl(point_names, more_colorvars):
+def create_div_mainctrl(point_names, assay_names, celltype_names, more_colorvars):
     return html.Div(
         className='row', 
         children=[
@@ -446,62 +408,31 @@ def create_div_mainctrl(point_names, more_colorvars):
                 className='three columns', 
                 children=[
                     dcc.Dropdown(
-                        id='points_annot', 
-                        options = [ {'value': gn, 'label': gn} for gn in point_names ], 
-                        placeholder="Experiment(s)...", multi=True
+                        id='assay_select', 
+                        options = [ {'value': gn, 'label': gn} for gn in assay_names ], 
+                        placeholder="Highlight assay(s)...", multi=True
                     )], 
                 style={ 'padding': 2, 'margin': 2}
             ), 
             html.Div(
-                className='four columns', 
+                className='three columns', 
                 children=[
                     dcc.Dropdown(
-                        id='landscape-color', 
-                        options = [{
-                            'value': app_config.params['default_color_var'], 
-                            'label': app_config.params['default_color_var']
-                        }] + [
-                            {'value': n, 'label': n} for n in more_colorvars
-                        ], 
-                        value=app_config.params['default_color_var'], 
-                        placeholder="Select colors to plot", 
-                        clearable=False
+                        id='celltype_select', 
+                        options = [ {'value': gn, 'label': gn} for gn in celltype_names ], 
+                        placeholder="Highlight celltype(s)...", multi=True
                     )], 
                 style={ 'padding': 2, 'margin': 2}
             ), 
             html.Div(
-                className='five columns', 
+                className='three columns', 
                 children=[
-                    html.Div(
-                        className='six columns', 
-                        children=[
-                            dcc.RadioItems(
-                                id='main-heatmap-roworder', 
-                                options=[ 
-                                    {'label': 'Cocluster', 'value': 'Cocluster'}, 
-                                    {'label': 'Sort by color', 'value': 'Sort by color'}], 
-                                style=legend_font_macro, 
-                                labelStyle={
-                                    'margin-right': '5px'
-                                }, 
-                                value='Sort by color'
-                            )]
-                    ), 
-                    html.Div(
-                        className='six columns', 
-                        children=[
-                            dcc.RadioItems(
-                                id='main-heatmap-normalize', 
-                                options=[ 
-                                    {'label': 'Log-transform', 'value': 'log'}, 
-                                    {'label': 'Multinomial residual', 'value': 'mult_dev'}, 
-                                    {'label': 'Binomial residual', 'value': 'bin_dev'}
-                                ], 
-                                style=legend_font_macro, 
-                                labelStyle={ 'margin-right': '5px' }, 
-                                value='log'
-                            )]
-                    )]
+                    dcc.Dropdown(
+                        id='points_annot', 
+                        options = [ {'value': gn, 'label': gn} for gn in point_names ], 
+                        placeholder="Search experiment(s)...", multi=True
+                    )], 
+                style={ 'padding': 2, 'margin': 2}
             )]
     )
 
@@ -593,45 +524,25 @@ def create_div_sidepanels(point_names, more_colorvars, align_options_list):
                 className="row", 
                 children=[
                     html.Div(
-                        className='row', 
-                        children=[
-                            html.Div(
-                                className='six columns', 
-                                children=[
-                                    dcc.Dropdown(
-                                        id='diff-foreset-select', 
-                                        value=[], multi=True, 
-                                        placeholder="Foreground..."
-                                    )], 
-                                style={'padding-top': '0px'}
-                            ), 
-                            html.Div(
-                                className='six columns', 
-                                children=[
-                                    dcc.Dropdown(
-                                        id='diff-backset-select', 
-                                        value=[], multi=True, 
-                                        placeholder="Background..."
-                                    )], 
-                                style={'padding-top': '0px'}
-                            )]
+                        id='display-assay-results', 
+                        className="six columns", 
+                        children=[], 
+                        style=style_invis_dialog_box
                     ), 
                     html.Div(
-                        className='row', 
-                        children=[
-                            dcc.Textarea(
-                                id='display-genelist', 
-                                wrap='True', value = '', 
-                                rows=1, placeholder="Selected genes", 
-                                style={'width': '100%'}
-                            )], 
-                        style={'padding-top': '5px'}
+                        id='display-celltype-results', 
+                        className="six columns", 
+                        children=[], 
+                        style=style_invis_dialog_box
+                    ), 
+                    dcc.Textarea(
+                        id='display-results', 
+                        wrap='True', value = '', 
+                        rows=10, placeholder="Selected genes", 
+                        style={'width': '100%'}
                     )], 
                 style=style_outer_dialog_box
-            )
-            # create_div_align_selection(align_options_list), 
-            # div_reviz_scatter, 
-        ],
+            )],
         style=style_invis_dialog_box
     )
 
@@ -640,7 +551,9 @@ def create_div_sidepanels(point_names, more_colorvars, align_options_list):
 Main layout.
 """
 
-def create_div_mainapp(point_names, more_colorvars=[], align_options_list=['Unaligned', 'Aligned']):
+def create_div_mainapp(
+    point_names, assay_names=[], celltype_names=[], more_colorvars=[], align_options_list=['Unaligned', 'Aligned']
+):
     return html.Div(
         className="container", 
         children=[
@@ -653,7 +566,7 @@ def create_div_mainapp(point_names, more_colorvars=[], align_options_list=['Unal
                         style=style_text_box
                     )]
             ), 
-            create_div_mainctrl(point_names, more_colorvars), 
+            create_div_mainctrl(point_names, assay_names, celltype_names, more_colorvars), 
             html.Div(
                 className="row", 
                 children=[
@@ -678,26 +591,6 @@ def create_div_mainapp(point_names, more_colorvars=[], align_options_list=['Unal
             dcc.Store(
                 id='stored-pointsets', 
                 data={ '_current_selected_data': {} }    # Maintained as the short-term state of a point subset.
-            ), 
-            dcc.Store(
-                id='stored-landscape-selected', 
-                data={ }, 
-                modified_timestamp=0
-            ), 
-            dcc.Store(
-                id='stored-most-recently-highlighted', 
-                data={ '_last_panel_highlighted': 'landscape' }, 
-                modified_timestamp=0
-            ), 
-            dcc.Store(
-                id='last-stored-subsetname', 
-                data='', 
-                modified_timestamp=0
-            ), 
-            dcc.Store(
-                id='last-loaded', 
-                data=[], 
-                modified_timestamp=0
             )
         ],
         style={ 

@@ -91,6 +91,10 @@ def traces_scatter(
     else:    # Categorical color scheme, one trace per color
         cnt = 0
         for idx, val in data_df.groupby(color_var):
+            if idx == 0:
+                marker_size = 3.0
+            else:
+                marker_size = 9.0
             point_ids_this_trace = list(val[app_config.params['display_ID_var']])
             spoint_ndces_this_trace = np.where(np.isin(point_ids_this_trace, selected_point_ids))[0]
             trace_opacity = 1.0
@@ -105,7 +109,7 @@ def traces_scatter(
                 'opacity': trace_opacity, 
                 'marker': {
                     'size': marker_size, 
-                    'opacity': app_config.params['marker_opacity'] if str(idx) != 'Other' else app_config.params['bg_marker_opacity'], 
+                    'opacity': 1.0, 
                     'symbol': 'circle'#, 'color': trace_color
                 }, 
                 'selected': style_selected

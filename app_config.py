@@ -13,9 +13,8 @@ if not _DEPLOY_LOCALLY:
 else:
     data_pfx = '/Users/akshay/github/encode-ui-sandbox/'
 
-params['plot_data_df_path'] = [data_pfx + "data/experiments.csv"]
+params['plot_data_df_path'] = data_pfx + "data/reordered_experiments.csv"
 params['adj_mat_path'] = data_pfx + 'data/encode3_6870_10nn.npz'
-#params['raw_data_path'] = data_pfx + "data/will_annot_noProg_proc.csv.gz"
 
 # params['feat_names_path'] = data_pfx + "data/feat_names.npy"
 # params['raw_datamat_path'] = data_pfx + "data/raw_data_young.npz"
@@ -24,7 +23,7 @@ params['display_ID_var'] = 'Experiment_name'
 
 
 # params['dataset_options'] = [x.split('/')[-1].split('.')[0] for x in params['plot_data_df_path']]
-params['dataset_options'] = [""]
+params['dataset_options'] = ["ENCODE3: 6870 experiments (assay x celltype)"]
 
 params['gene2go_path'] = data_pfx + 'gene2go'
 params['go_obo_path'] = data_pfx + 'data/go-basic.obo'
@@ -37,7 +36,7 @@ params['hm_diverging'] = False
 
 params['legendgroup'] = True
 params['display_coordinates'] = { 'x': 'umap_raw_X',  'y': 'umap_raw_Y' }
-#params['display_coordinates'] = { 'x': 'umap_graph_X',  'y': 'umap_graph_Y' }
+params['display_coordinates_diffmap'] = { 'x': 'umap_graph_X',  'y': 'umap_graph_Y' }
 params['qnorm_plot'] = True
 params['hm_qnorm_plot'] = False
 params['continuous_color'] = False
@@ -76,8 +75,7 @@ cmap_custom_orpu_diverging = [(0.0, '#c2b5fe'), (0.05263157894736842, '#b1a5e6')
 
 
 if 'colorscale_discrete' not in params:
-    params['colorscale_discrete'] = ["#bdbdbd", "#f7ff00", "#ff8300", "#f000ff", "#001eff", "#33ccff", "#74ee15", "#33a02c", "#fb9a99", "#ff3300", "#cab2d6", 
-                                     '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0'] # cmap_custom_discrete
+    params['colorscale_discrete'] = ["#33ccff", "#ff3300", "#74ee15", "#f000ff", "#ff8300"]#["#bdbdbd", "#f7ff00", "#ff8300", "#f000ff", "#001eff", "#33ccff", "#74ee15", "#33a02c", "#fb9a99", "#ff3300", "#cab2d6", '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0'] # cmap_custom_discrete
 if 'colorscale_continuous' not in params:
     params['colorscale_continuous'] = 'Viridis'
 

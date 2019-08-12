@@ -9,7 +9,7 @@ import base64, io, os, time, json
 import numpy as np, scipy as sp, pandas as pd, dash
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-import app_config, app_lib, building_block_divs, learning_algs, interact_heatmap
+import app_config, app_lib, building_block_divs, interact_heatmap
 # import matplotlib, matplotlib.pyplot as plt, matplotlib.colors as colors
 """
 For more on jobs that take a while: set up workers https://github.com/WileyIntelligentSolutions/wiley-boilerplate-dash-app
@@ -22,13 +22,15 @@ For more on jobs that take a while: set up workers https://github.com/WileyIntel
 # =========================================================
 
 # Load gene embedded coordinates.
-plot_data_df = pd.read_csv(app_config.params['plot_data_df_path'][0], sep="\t", index_col=False)
+plot_data_df = pd.read_csv(app_config.params['plot_data_df_path'], sep="\t", index_col=False)
 graph_adj = sp.sparse.load_npz(app_config.params['adj_mat_path'])
 # data_ess = pd.read_csv(app_config.params['raw_data_path'], index_col=0, sep='\t')
 
 point_names = np.array(plot_data_df[app_config.params['display_ID_var']])
 additional_colorvars = []
 
+assay_names = [x.split('_signal')[0] for x in plot_data_df['Assay'] if '_signal'  in x]
+cell_types = np.array(plot_data_df['Biosample'])
 
 app = dash.Dash(__name__)
 if not app_config._DEPLOY_LOCALLY:
@@ -37,13 +39,10 @@ if not app_config._DEPLOY_LOCALLY:
 server=app.server
 app.layout = building_block_divs.create_div_mainapp(
     point_names, 
-<<<<<<< HEAD
-    feat_names, 
-    more_colorvars=additional_colorvars
-=======
+    assay_names=np.unique(assay_names), 
+    celltype_names=np.unique(cell_types), 
     more_colorvars=additional_colorvars, 
     align_options_list=['Unaligned', 'Aligned']
->>>>>>> 16855cb8b83d47cff83a4d25acf95f2cd3de899d
 )
 
 
@@ -147,21 +146,23 @@ def highlight_landscape_func(
 
 
 def run_update_landscape(
-    color_scheme,          # Feature(s) selected to plot as color.
     annotated_points,      # Selected points annotated
     subset_store,       # Store of selected point subsets.
     data_df, 
     point_names, 
     marker_size, 
     style_selected, 
-    highlighted_points=[]
+    highlighted_points=[], 
+    nbr_points=[], 
+    diffmap_embed=False, 
+    color_scheme='Dummy'          # Feature(s) selected to plot as color.
 ):
-    # Here is where what is rendered as selected in the landscape differs from _current_selected_data
     pointIDs_to_select = highlighted_points if (len(highlighted_points) > 0) else list(subset_store['_current_selected_data'].keys())
     if annotated_points is None:
         annotated_points = []
-    absc_arr = data_df[app_config.params['display_coordinates']['x']]
-    ordi_arr = data_df[app_config.params['display_coordinates']['y']]
+    absc_arr = data_df[app_config.params['display_coordinates']['x']] if ~diffmap_embed else data_df[app_config.params['display_coordinates_diffmap']['x']]
+    ordi_arr = data_df[app_config.params['display_coordinates']['y']] if ~diffmap_embed else data_df[app_config.params['display_coordinates_diffmap']['y']]
+    data_df[color_scheme][np.isin(point_names, nbr_points)] = 1
     
     print('Color scheme: {}'.format(color_scheme))
     # Check if a continuous feature is chosen to be plotted.
@@ -171,7 +172,7 @@ def run_update_landscape(
        ):
         if not isinstance(color_scheme, (list, tuple)):
             color_scheme = [color_scheme]
-        new_colors = 0#np.mean(raw_data_to_use, axis=1)
+        new_colors = 0
         return highlight_landscape_func(
             annotated_points, 
             data_df, 
@@ -193,7 +194,7 @@ def run_update_landscape(
             color_var=color_scheme, 
             colorscale=app_config.params['colorscale_discrete'], 
             selectedpoint_ids=pointIDs_to_select, 
-            highlight_selected=True, 
+            highlight_selected=False, 
             absc_arr=absc_arr, 
             ordi_arr=ordi_arr, 
             marker_size=marker_size, 
@@ -221,24 +222,20 @@ def parse_upload_contents(contents, filename):
 
 @app.callback(
     Output('test-select-data', 'children'),
-    [Input('stored-landscape-selected', 'data'), 
-     Input('stored-pointsets', 'data')]
+    [Input('stored-pointsets', 'data'), 
+     Input('landscape-plot', 'clickData')]
 )
 def display_test(
-    sel_data, 
-    data_store
+    data_store, clickData
 ):
-    see_sel = "0" if sel_data is None else str(len(sel_data))
     toret = ""
     for setname in data_store:
         toret = toret + "{}\t{}\n".format(data_store[setname], setname)
-    if True:  #panel_data['debug_panel']:
-        return "***STORED SELECTED DATA***\n{}\n***Landscape SELECTED DATA***\n{}".format(
-            toret, 
-            see_sel
-        )
-    else:
-        return ""
+    return ""
+#     "***SELECTED DATA***\n{}\nCLICK DATA: \n{}".format(
+#         toret, 
+#         json.dumps(clickData, indent=2)
+#     )
 
 
 # https://community.plot.ly/t/download-raw-data/4700/7
@@ -266,7 +263,7 @@ import urllib
 def update_download_layout_link(sourcedata_select):
     dataset_names = app_config.params['dataset_options']
     ndx_selected = dataset_names.index(sourcedata_select) if sourcedata_select in dataset_names else 0
-    data_df = pd.read_csv(app_config.params['plot_data_df_path'][ndx_selected], sep="\t", index_col=False)
+    data_df = pd.read_csv(app_config.params['plot_data_df_path'], sep="\t", index_col=False)
     coords_to_load = list(app_config.params['display_coordinates'].values()) + ['gene_names']
     for c in coords_to_load:
         if c not in data_df:
@@ -291,43 +288,69 @@ def update_marker_size(marker_size):
     return 'Marker size: {}'.format(marker_size)
 
 
+@app.callback(
+    Output('display-results', 'value'),
+    [Input('landscape-plot', 'clickData')]
+)
+def display_results(plot_click_data):
+    if plot_click_data is None:
+        return ""
+    expname = plot_click_data['points'][0]['text']
+    exp_ndx = np.where(point_names == expname)[0][0]
+    nbrs = point_names[np.where(np.ravel(graph_adj[exp_ndx,:].toarray()) != 0)[0]]
+    return "\n".join(nbrs)
+
+
 """
 Update the main graph panel.
 """
 @app.callback(
     Output('landscape-plot', 'figure'), 
-    [Input('landscape-color', 'value'), 
-     Input('points_annot', 'value'), 
+    [Input('points_annot', 'value'), 
      Input('stored-pointsets', 'data'), 
      Input('sourcedata-select', 'value'), 
      Input('slider-marker-size-factor', 'value'), 
-     Input('slider-selected-marker-size-factor', 'value')]
+     Input('slider-selected-marker-size-factor', 'value'), 
+     Input('assay_select', 'value'), 
+     Input('celltype_select', 'value'), 
+     Input('landscape-plot', 'clickData')]
 )
 def update_landscape(
-    color_scheme,          # Feature(s) selected to plot as color.
     annotated_points,      # Selected points annotated
     subset_store,          # Store of selected point subsets.
     sourcedata_select, 
     marker_size, 
-    sel_marker_size
+    sel_marker_size, 
+    assay_selected, 
+    celltype_selected, 
+    plot_click_data
 ):
     dataset_names = app_config.params['dataset_options']
     ndx_selected = dataset_names.index(sourcedata_select) if sourcedata_select in dataset_names else 0
-    data_df = pd.read_csv(app_config.params['plot_data_df_path'][ndx_selected], sep="\t", index_col=False)
+    data_df = pd.read_csv(app_config.params['plot_data_df_path'], sep="\t", index_col=False)
     style_selected = building_block_divs.style_selected
     style_selected['marker']['size'] = sel_marker_size
+    
+    if plot_click_data is not None:
+        expname = plot_click_data['points'][0]['text']
+        exp_ndx = np.where(point_names == expname)[0][0]
+        nbrs = point_names[np.where(np.ravel(graph_adj[exp_ndx,:].toarray()) != 0)[0]]
+        data_df['Dummy'][np.isin(point_names, nbrs)] = 2
+    else:
+        nbrs = []
 
-    recently_highlighted = []
-    #recently_highlighted.remove('_last_panel_highlighted')
+    curr_highlighted = []
+    curr_highlighted = np.logical_or(assay_names == assay_selected, cell_types == celltype_selected)
+    
     return run_update_landscape(
-        color_scheme, 
         annotated_points, 
         subset_store, 
         data_df, 
         point_names, 
         marker_size, 
         style_selected, 
-        highlighted_points=recently_highlighted    # List of most recently highlighted cells.
+        nbr_points=nbrs, 
+        highlighted_points=curr_highlighted    # List of most recently highlighted cells.
     )
 
 
