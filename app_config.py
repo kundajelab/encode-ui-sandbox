@@ -6,7 +6,7 @@ params = {}
 params['title'] = "ENCODE 3 experiment browser"
 
 
-_DEPLOY_LOCALLY = True
+_DEPLOY_LOCALLY = False
 
 if not _DEPLOY_LOCALLY:
     data_pfx = '/var/www/encode-ui-sandbox/'
