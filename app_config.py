@@ -11,7 +11,7 @@ _DEPLOY_LOCALLY = True
 if not _DEPLOY_LOCALLY:
     data_pfx = '/var/www/encode-ui-sandbox/'
 else:
-    data_pfx = '/Users/akshay/github/encode-ui-sandbox/'
+    data_pfx = '/Users/kristymualim/encode/ui/encode-ui-sandbox/'
 
 params['plot_data_df_path'] = data_pfx + "data/reordered_experiments.csv"
 params['adj_mat_path'] = data_pfx + 'data/encode3_6870_10nn.npz'
@@ -56,10 +56,10 @@ cmap_jumbo = ["#f7ff00","#ff8300","#f000ff","#001eff","#33ccff","#74ee15","#fb9a
 cmap_custom_blackbody = [[0.0, "#000000"], [0.39, "#b22222"], [0.58, "#e36905"], [0.84, "#eed214"], [1.0, "#ffffff"]]
 
 # Default discrete colormap for <= 20 categories, from https://sashat.me/2017/01/11/list-of-20-simple-distinct-colors/. See also http://phrogz.net/css/distinct-colors.html and http://tools.medialab.sciences-po.fr/iwanthue/
-cmap_custom_discrete = ["#bdbdbd", 
-                        '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', 
-                        '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', 
-                        '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', 
+cmap_custom_discrete = ["#bdbdbd",
+                        '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
+                        '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe',
+                        '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000',
                         '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080']#, '#7d87b9', '#bec1d4', '#d6bcc0']
 
 # Custom cubehelix do-it-all sequential palette, from [x for x in zip(np.arange(21)/20, sns.color_palette("cubehelix", 21).as_hex())]

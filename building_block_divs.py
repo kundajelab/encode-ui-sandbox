@@ -11,11 +11,10 @@ This module contains the following parts:
 - Component divs: cosmetic panel (debugging)
 - Aggregation of component divs
 """
-
-
+import pandas as pd
+import dash_table
 import dash_core_components as dcc, dash_html_components as html
 import app_config, numpy as np
-
 
 # ================================================================
 # =================== Component styles/layouts ===================
@@ -23,146 +22,146 @@ import app_config, numpy as np
 
 
 legend_font_macro = {
-    'family': 'sans-serif', 
-    'size': app_config.params['legend_font_size'], 
-    'color': app_config.params['legend_font_color'] 
+    'family': 'sans-serif',
+    'size': app_config.params['legend_font_size'],
+    'color': app_config.params['legend_font_color']
 }
 
 colorbar_font_macro = {
-    'family': 'sans-serif', 
-    'size': 8, 
-    'color': app_config.params['legend_font_color'] 
+    'family': 'sans-serif',
+    'size': 8,
+    'color': app_config.params['legend_font_color']
 }
 
 hm_font_macro = {
-    'family': 'sans-serif', 
-    'size': 8, 
-    'color': app_config.params['legend_font_color'] 
+    'family': 'sans-serif',
+    'size': 8,
+    'color': app_config.params['legend_font_color']
 }
 
 style_unselected = {
     'marker': {
-        'size': 3.0, 
+        'size': 3.0,
         'opacity': 0.7
     }
 }
 
 style_selected = {
     'marker': {
-        'size': 6.0, 
+        'size': 6.0,
         'opacity': 122.2
     }
 }
 
 style_outer_dialog_box = {
-    # 'user-select': 'none', '-moz-user-select': 'none', '-webkit-user-select': 'none', '-ms-user-select': 'none', 
-    'padding': 5, 
-    # 'margin': 5, 
-    # 'borderRadius': 5, 
+    # 'user-select': 'none', '-moz-user-select': 'none', '-webkit-user-select': 'none', '-ms-user-select': 'none',
+    'padding': 5,
+    # 'margin': 5,
+    # 'borderRadius': 5,
     'border': 'thin lightgrey solid'
 }
 
 style_invis_dialog_box = {
-    # 'user-select': 'none', '-moz-user-select': 'none', '-webkit-user-select': 'none', '-ms-user-select': 'none', 
-    'padding': 5, 
+    # 'user-select': 'none', '-moz-user-select': 'none', '-webkit-user-select': 'none', '-ms-user-select': 'none',
+    'padding': 5,
     'margin': 5
 }
 
 style_hm_colorbar = {
-    'len': 0.3, 
-    'thickness': 20, 
-    'xanchor': 'left', 
-    'yanchor': 'top', 
-    'title': app_config.params['hm_colorvar_name'], 
-    'titleside': 'top', 
-    'ticks': 'outside', 
-    'titlefont': legend_font_macro, 
+    'len': 0.3,
+    'thickness': 20,
+    'xanchor': 'left',
+    'yanchor': 'top',
+    'title': app_config.params['hm_colorvar_name'],
+    'titleside': 'top',
+    'ticks': 'outside',
+    'titlefont': legend_font_macro,
     'tickfont': legend_font_macro
 }
 
 style_text_box = {
-    'textAlign': 'center', 
-    'width': '100%', 
+    'textAlign': 'center',
+    'width': '100%',
     'color': app_config.params['font_color']
 }
 
 style_upload = {
-    'width': '100%', 
+    'width': '100%',
     'border': 'thin lightgrey solid',
-    'textAlign': 'center', 
-    'color': app_config.params['font_color'], 
-    'padding-top': '5px', 
+    'textAlign': 'center',
+    'color': app_config.params['font_color'],
+    'padding-top': '5px',
     'padding-bottom': '5px'
 }
 
 style_legend = {
-    'font': legend_font_macro, 
-    # bgcolor=app_config.params['legend_bgcolor'], 
-    # 'borderwidth': app_config.params['legend_borderwidth'], 
-    'padding': 0, 
-    'margin': 0, 
-    'border': 'thin lightgrey solid', 
-    'traceorder': 'normal', 
+    'font': legend_font_macro,
+    # bgcolor=app_config.params['legend_bgcolor'],
+    # 'borderwidth': app_config.params['legend_borderwidth'],
+    'padding': 0,
+    'margin': 0,
+    'border': 'thin lightgrey solid',
+    'traceorder': 'normal',
     'orientation': 'h'
 }
 
 
 def create_hm_layout(
-    scatter_frac_domain=0.10, scatter_frac_range=0.08, 
+    scatter_frac_domain=0.10, scatter_frac_range=0.08,
     show_legend=False, clustersep_coords=[]
 ):
     shape_list = []
     for x in clustersep_coords:
         shape_list.append({
             'type': 'line',
-            'x0': x, 'x1': x, 'y0': -1.0, 'y1': 1.0, 'yref': 'y2', 
+            'x0': x, 'x1': x, 'y0': -1.0, 'y1': 1.0, 'yref': 'y2',
             'line': { 'color': 'white', 'width': 3 }
         })
     hm_layout = {
         'annotations': [{
-                'x': 0.5, 'y': 1.05, 'showarrow': False, 
-                'font': { 'family': 'sans-serif', 'size': 15, 'color': app_config.params['legend_font_color'] }, 
+                'x': 0.5, 'y': 1.05, 'showarrow': False,
+                'font': { 'family': 'sans-serif', 'size': 15, 'color': app_config.params['legend_font_color'] },
                 'text': 'Genes',
                 'xref': 'paper', 'yref': 'paper'
-            }, 
+            },
             {
-                'x': 0.0, 'y': 0.5, 'showarrow': False, 
-                'font': { 'family': 'sans-serif', 'size': 15, 'color': app_config.params['legend_font_color'] }, 
-                'text': 'Cells', 
-                'textangle': -90, 
+                'x': 0.0, 'y': 0.5, 'showarrow': False,
+                'font': { 'family': 'sans-serif', 'size': 15, 'color': app_config.params['legend_font_color'] },
+                'text': 'Cells',
+                'textangle': -90,
                 'xref': 'paper', 'yref': 'paper'
             }
-        ], 
-        'margin': { 'l': 0, 'r': 0, 'b': 0, 't': 30 }, 
+        ],
+        'margin': { 'l': 0, 'r': 0, 'b': 0, 't': 30 },
         'clickmode': 'event+select',  # https://github.com/plotly/plotly.js/pull/2944/
-        'hovermode': 'closest', 
-        'uirevision': 'Default dataset', 
+        'hovermode': 'closest',
+        'uirevision': 'Default dataset',
         'xaxis': {
-            'showticklabels': True, 'side': 'top', 
-            'tickcolor': app_config.params['legend_bgcolor'], 
-            'tickfont': { 'family': 'sans-serif', 'size': app_config.params['hm_font_size'], 'color': app_config.params['legend_font_color'] }, # 'dtick': 1, 
-            'showgrid': False, 'showline': False, 'zeroline': False, 'visible': False, 
+            'showticklabels': True, 'side': 'top',
+            'tickcolor': app_config.params['legend_bgcolor'],
+            'tickfont': { 'family': 'sans-serif', 'size': app_config.params['hm_font_size'], 'color': app_config.params['legend_font_color'] }, # 'dtick': 1,
+            'showgrid': False, 'showline': False, 'zeroline': False, 'visible': False,
             'domain': [scatter_frac_domain, 1]
-        }, 
+        },
         'xaxis2': {
-            'showgrid': False, 'showline': False, 'zeroline': False, 'visible': False, 
-            'domain': [0, scatter_frac_domain], 
+            'showgrid': False, 'showline': False, 'zeroline': False, 'visible': False,
+            'domain': [0, scatter_frac_domain],
             'range': [-1, 0.2]
-        }, 
+        },
         'yaxis': {
-            'automargin': True, 
-            'showticklabels': False, 
-            'showgrid': False, 'showline': False, 'zeroline': False, 'visible': False, 
-            'domain': [0, 1-scatter_frac_range] 
-        }, 
+            'automargin': True,
+            'showticklabels': False,
+            'showgrid': False, 'showline': False, 'zeroline': False, 'visible': False,
+            'domain': [0, 1-scatter_frac_range]
+        },
         'yaxis2': {
-            'showgrid': False, 'showline': False, 'zeroline': False, 'visible': False, 
+            'showgrid': False, 'showline': False, 'zeroline': False, 'visible': False,
             'domain': [1-scatter_frac_range, 1]
-        }, 
-        'legend': style_legend, 
-        'showlegend': show_legend, 
-        'plot_bgcolor': app_config.params['bg_color'], 
-        'paper_bgcolor': app_config.params['bg_color'], 
+        },
+        'legend': style_legend,
+        'showlegend': show_legend,
+        'plot_bgcolor': app_config.params['bg_color'],
+        'paper_bgcolor': app_config.params['bg_color'],
         'shapes': shape_list
     }
     return hm_layout
@@ -170,29 +169,39 @@ def create_hm_layout(
 
 def create_scatter_layout(annotations):
     return {
-        'margin': { 'l': 0, 'r': 0, 'b': 0, 't': 20}, 
+        'margin': { 'l': 0, 'r': 0, 'b': 0, 't': 20},
         'clickmode': 'event+select',  # https://github.com/plotly/plotly.js/pull/2944/
-        'hovermode': 'closest', 
+        'hovermode': 'closest',
         'uirevision': 'Default dataset',     # https://github.com/plotly/plotly.js/pull/3236
         'xaxis': {
-            'automargin': True, 
-            'showticklabels': False, 
-            'showgrid': False, 'showline': False, 'zeroline': False, #'visible': False, 
+            'automargin': True,
+            'showticklabels': False,
+            'showgrid': False, 'showline': False, 'zeroline': False, #'visible': False,
             'style': {'display': 'none'}
-        }, 
+        },
         'yaxis': {
-            'automargin': True, 
-            'showticklabels': False, 
-            'showgrid': False, 'showline': False, 'zeroline': False, #'visible': False, 
+            'automargin': True,
+            'showticklabels': False,
+            'showgrid': False, 'showline': False, 'zeroline': False, #'visible': False,
             'style': {'display': 'none'}
-        }, 
-        'legend': style_legend, 
-        'annotations': annotations, 
-        'plot_bgcolor': app_config.params['bg_color'], 
+        },
+        'legend': style_legend,
+        'annotations': annotations,
+        'plot_bgcolor': app_config.params['bg_color'],
         'paper_bgcolor': app_config.params['bg_color']
     }
 
-
+def get_contents_to_df(celltypes, assays):
+     data = {'celltypes': celltypes, 'assays':assays}
+     dataframe = pd.DataFrame(data)
+     return html.Table(
+         # Header
+         [html.Tr([html.Th(col) for col in dataframe.columns]) ] +
+         # Body
+         [html.Tr([
+             html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+         ]) for i in range(min(len(dataframe), max_rows))]
+         )
 
 # =================================================================
 # =================== Component divs: save/load ===================
@@ -200,45 +209,45 @@ def create_scatter_layout(annotations):
 
 
 div_pointset_select = html.Div(
-    className='row', 
+    className='row',
     children=[
         html.Div(
-            className='row', 
+            className='row',
             children=[
                 html.Div(
-                    id='num-selected-counter', 
-                    className='four columns', 
-                    children='Cells selected: 0', 
+                    id='num-selected-counter',
+                    className='four columns',
+                    children='Cells selected: 0',
                     style={
-                        'textAlign': 'center', 
-                        'color': app_config.params['font_color'], 
+                        'textAlign': 'center',
+                        'color': app_config.params['font_color'],
                         'padding-top': '10px'
                     }
-                ), 
+                ),
                 html.Div(
-                    className='eight columns', 
+                    className='eight columns',
                     children=[
                         dcc.Input(
-                            id='pointset-name', 
-                            type='text', 
-                            placeholder="Store cell set with name...", 
-                            value='', 
-                            debounce=True, 
-                            n_submit_timestamp=0, 
+                            id='pointset-name',
+                            type='text',
+                            placeholder="Store cell set with name...",
+                            value='',
+                            debounce=True,
+                            n_submit_timestamp=0,
                             style={'width': '100%'}
-                        )], 
+                        )],
                     style={'padding-top': '5px'}
                 )]
-        ), 
+        ),
         html.Div(
-            className='row', 
+            className='row',
             children=[
                 dcc.Dropdown(
-                    id='list-pointsets', 
-                    placeholder="Select stored cell sets to load", 
-                    multi=True, 
+                    id='list-pointsets',
+                    placeholder="Select stored cell sets to load",
+                    multi=True,
                     value=[]
-                )], 
+                )],
             style={'padding-top': '5px'}
         )]
 )
@@ -252,33 +261,33 @@ div_pointset_select = html.Div(
 
 def create_div_align_selection(options_list):
     return html.Div(
-        className='row', 
+        className='row',
         children=[
             html.Div(
-                className='four columns', 
-                children=[ 
+                className='four columns',
+                children=[
                     html.Button(
-                        id='align-button', 
-                        children='Display alignment', 
-                        n_clicks=0, 
+                        id='align-button',
+                        children='Display alignment',
+                        n_clicks=0,
                         n_clicks_timestamp=0,
                         style=style_text_box
-                    )], 
+                    )],
                 style={'padding-top': '5px'}
-            ), 
+            ),
             html.Div(
-                className='eight columns', 
+                className='eight columns',
                 children=[
                     dcc.RadioItems(
-                        id='align-method-selection', 
-                        options=[ {'label': v, 'value': v} for v in options_list ], 
-                        style=legend_font_macro, 
+                        id='align-method-selection',
+                        options=[ {'label': v, 'value': v} for v in options_list ],
+                        style=legend_font_macro,
                         labelStyle={
-                            'display': 'inline-block', 
+                            'display': 'inline-block',
                             'margin-right': '5px'
-                        }, 
+                        },
                         value='Unaligned'
-                    )], 
+                    )],
                 style={'padding-top': '10px'}
             )]
     )
@@ -287,27 +296,27 @@ def create_div_align_selection(options_list):
 # Default dataset first in the given list of dataset options.
 def create_div_select_dataset(dataset_options):
     return html.Div(
-        className='row', 
+        className='row',
         children=[
             html.Div(
-                className='four columns', 
+                className='four columns',
                 children=[
                     html.P(
-                        "Browse embedding: ", 
+                        "Browse embedding: ",
                         style=style_text_box
-                    )], 
+                    )],
                 style={'padding-top': '10px'}
-            ), 
+            ),
             html.Div(
-                className='eight columns', 
+                className='eight columns',
                 children=[
                     dcc.Dropdown(
-                        id='sourcedata-select', 
-                        options = [ {'value': dn, 'label': dn} for dn in dataset_options ], # style={'height': '30px'}, 
-                        value=dataset_options[0], 
+                        id='sourcedata-select',
+                        options = [ {'value': dn, 'label': dn} for dn in dataset_options ], # style={'height': '30px'},
+                        value=dataset_options[0],
                         clearable=False
                     )]
-            )], 
+            )],
         style=style_outer_dialog_box
     )
 
@@ -321,75 +330,75 @@ def create_div_select_dataset(dataset_options):
 # Default dataset first in the given list of dataset options.
 def create_div_cosmetic_panel():
     return html.Div(
-        className='row', 
+        className='row',
         children=[
             html.Div(
-                className='two columns', 
+                className='two columns',
                 children=[
                     html.P(
-                        "Interface options: ", 
+                        "Interface options: ",
                         style=style_text_box
-                    )], 
+                    )],
                 style={'padding-top': '10px'}
-            ), 
+            ),
             html.Div(
-                className='three columns', 
+                className='three columns',
                 children=[
                     dcc.Slider(
                         id='slider-marker-size-factor',
-                        min=0, max=8, step=0.2, 
+                        min=0, max=8, step=0.2,
                         value=app_config.params['marker_size']
-                    ), 
+                    ),
                     html.Div(
-                        id='display-marker-size-factor', 
+                        id='display-marker-size-factor',
                         style={
-                            'textAlign': 'center', 
-                            'color': app_config.params['font_color'], 
+                            'textAlign': 'center',
+                            'color': app_config.params['font_color'],
                             'padding-top': '10px'
                         }
                     )]
-            ), 
+            ),
             html.Div(
-                className='three columns', 
+                className='three columns',
                 children=[
                     dcc.Slider(
                         id='slider-selected-marker-size-factor', # marks={ 4: {'label': '4'} }
-                        min=0, max=15, step=0.2, 
+                        min=0, max=15, step=0.2,
                         value=app_config.params['sel_marker_size']
-                    ), 
+                    ),
                     html.Div(
-                        id='display-selected-marker-size-factor', 
+                        id='display-selected-marker-size-factor',
                         style={
-                            'textAlign': 'center', 
-                            'color': app_config.params['font_color'], 
+                            'textAlign': 'center',
+                            'color': app_config.params['font_color'],
                             'padding-top': '10px'
                         }
                     )]
-            ), 
+            ),
             html.Div(
-                className='two columns', 
+                className='two columns',
                 children=[
                     html.A(
                         html.Button(
-                            id='download-layout-button', 
-                            children='Get CSV', 
-                            style=style_text_box, 
-                            n_clicks=0, 
+                            id='download-layout-button',
+                            children='Get CSV',
+                            style=style_text_box,
+                            n_clicks=0,
                             n_clicks_timestamp=0
-                        ), 
+                        ),
                         id='download-layout-link',
-                        download="selected_layout.csv", 
+                        download="selected_layout.csv",
                         href="",
-                        target="_blank", 
+                        target="_blank",
                         style={
-                            'width': '100%', 
-                            'textAlign': 'center', 
+                            'width': '100%',
+                            'textAlign': 'center',
                             'color': app_config.params['font_color']
                         }
-                    )], 
+                    )],
                 style={ 'padding-top': '10px' }
             )
-        ], 
+        ],
         style=style_outer_dialog_box
     )
 
@@ -402,36 +411,36 @@ def create_div_cosmetic_panel():
 
 def create_div_mainctrl(point_names, assay_names, celltype_names, more_colorvars):
     return html.Div(
-        className='row', 
+        className='row',
         children=[
             html.Div(
-                className='three columns', 
+                className='three columns',
                 children=[
                     dcc.Dropdown(
-                        id='assay_select', 
-                        options = [ {'value': gn, 'label': gn} for gn in assay_names ], 
+                        id='assay_select',
+                        options = [ {'value': gn, 'label': gn} for gn in assay_names ],
                         placeholder="Highlight assay(s)...", multi=True
-                    )], 
+                    )],
                 style={ 'padding': 2, 'margin': 2}
-            ), 
+            ),
             html.Div(
-                className='three columns', 
+                className='three columns',
                 children=[
                     dcc.Dropdown(
-                        id='celltype_select', 
-                        options = [ {'value': gn, 'label': gn} for gn in celltype_names ], 
+                        id='celltype_select',
+                        options = [ {'value': gn, 'label': gn} for gn in celltype_names ],
                         placeholder="Highlight celltype(s)...", multi=True
-                    )], 
+                    )],
                 style={ 'padding': 2, 'margin': 2}
-            ), 
+            ),
             html.Div(
-                className='three columns', 
+                className='three columns',
                 children=[
                     dcc.Dropdown(
-                        id='points_annot', 
-                        options = [ {'value': gn, 'label': gn} for gn in point_names ], 
+                        id='points_annot',
+                        options = [ {'value': gn, 'label': gn} for gn in point_names ],
                         placeholder="Search experiment(s)...", multi=True
-                    )], 
+                    )],
                 style={ 'padding': 2, 'margin': 2}
             )]
     )
@@ -443,107 +452,108 @@ def create_div_landscapes():
         children=[
             dcc.Graph(
                 id='landscape-plot',
-                config={'displaylogo': False, 'displayModeBar': True}, 
+                config={'displaylogo': False, 'displayModeBar': True},
                 style={ 'height': '100vh'}
-            ), 
+            ),
             html.Div(
-                className="row", 
+                className="row",
                 children=[
                     html.Div(
-                        className="four columns", 
+                        className="four columns",
                         children=[
                             html.Div(
-                                className='row', 
+                                className='row',
                                 children=[
                                     html.Div(
-                                        className='six columns', 
+                                        className='six columns',
                                         children=[
                                             html.A(
                                                 html.Button(
-                                                    id='download-button', 
-                                                    children='Save', 
-                                                    style=style_text_box, 
-                                                    n_clicks=0, 
+                                                    id='download-button',
+                                                    children='Save',
+                                                    style=style_text_box,
+                                                    n_clicks=0,
                                                     n_clicks_timestamp=0
-                                                ), 
+                                                ),
                                                 id='download-set-link',
-                                                download="selected_set.csv", 
+                                                download="selected_set.csv",
                                                 href="",
-                                                target="_blank", 
+                                                target="_blank",
                                                 style={
-                                                    'width': '100%', 
-                                                    'textAlign': 'center', 
+                                                    'width': '100%',
+                                                    'textAlign': 'center',
                                                     'color': app_config.params['font_color']
                                                 }
-                                            )], 
+                                            )],
                                         style={'padding-top': '0px'}
-                                    ), 
+                                    ),
                                     html.Div(
-                                        className='six columns', 
+                                        className='six columns',
                                         children=[
                                             dcc.Upload(
                                                 id='upload-pointsets',
                                                 children=html.Div([
                                                     html.Button(
-                                                        id='upload-button', 
-                                                        children='Load', 
-                                                        style=style_text_box, 
-                                                        n_clicks=0, 
+                                                        id='upload-button',
+                                                        children='Load',
+                                                        style=style_text_box,
+                                                        n_clicks=0,
                                                         n_clicks_timestamp=0
                                                     )]
                                                 ),
                                                 style={
-                                                    'width': '100%', 
-                                                    'textAlign': 'center', 
+                                                    'width': '100%',
+                                                    'textAlign': 'center',
                                                     'color': app_config.params['font_color']
-                                                }, 
+                                                },
                                                 multiple=True
                                             )]
-                                    )], 
+                                    )],
                                 style={ 'border': 'thin lightgrey solid', 'padding': 1, 'margin': 1 }
                             )
-                        ], 
+                        ],
                         style=style_invis_dialog_box
-                    ), 
+                    ),
                     html.Div(
-                        className="eight columns", 
+                        className="eight columns",
                         children=[
                             create_div_select_dataset(app_config.params['dataset_options'])
-                        ], 
+                        ],
                         style=style_invis_dialog_box
                     )]
             )]
     )
 
+# initialize empty df : columns
 
 def create_div_sidepanels(point_names, more_colorvars, align_options_list):
     return html.Div(
-        className='four columns', 
+        className='four columns',
         children=[
             html.Div(
-                className="row", 
-                children=[
-                    html.Div(
-                        id='display-assay-results', 
-                        className="six columns", 
-                        children=[], 
-                        style=style_invis_dialog_box
-                    ), 
-                    html.Div(
-                        id='display-celltype-results', 
-                        className="six columns", 
-                        children=[], 
-                        style=style_invis_dialog_box
-                    ), 
-                    dcc.Textarea(
-                        id='display-results', 
-                        wrap='True', value = '', 
-                        rows=10, placeholder="Selected genes", 
-                        style={'width': '100%'}
-                    )], 
-                style=style_outer_dialog_box
-            )],
+                html.Table(
+                    id="datatable"
+               #         ),
+               #     html.Div(
+               #         id='display-assay-results',
+               #         className="six columns",
+               #         children=[],
+               #         style=style_invis_dialog_box
+               #     ),
+               #     html.Div(
+               #         id='display-celltype-results',
+               #         className="six columns",
+               #         children=[],
+               #         style=style_invis_dialog_box
+               #     ),
+               #     dcc.Textarea(
+               #       id='display-results',
+               #         wrap='True', value = '',
+               #         rows=10, placeholder="Selected genes",
+               #         style={'width': '100%'}
+                    ),
         style=style_invis_dialog_box
+        )]
     )
 
 
@@ -555,46 +565,46 @@ def create_div_mainapp(
     point_names, assay_names=[], celltype_names=[], more_colorvars=[], align_options_list=['Unaligned', 'Aligned']
 ):
     return html.Div(
-        className="container", 
+        className="container",
         children=[
             html.Div(
-                className='row', 
+                className='row',
                 children=[
                     html.H1(
-                        id='title', 
-                        children=app_config.params['title'], 
+                        id='title',
+                        children=app_config.params['title'],
                         style=style_text_box
                     )]
-            ), 
-            create_div_mainctrl(point_names, assay_names, celltype_names, more_colorvars), 
+            ),
+            create_div_mainctrl(point_names, assay_names, celltype_names, more_colorvars),
             html.Div(
-                className="row", 
+                className="row",
                 children=[
-                    create_div_landscapes(), 
+                    create_div_landscapes(),
                     create_div_sidepanels(point_names, more_colorvars, align_options_list)
                 ]
-            ), 
-            create_div_cosmetic_panel(), 
-            html.Div([ html.Pre(id='test-select-data', style={ 'color': app_config.params['font_color'], 'overflowX': 'scroll' } ) ]),     # For testing purposes only!
+            ),
+            create_div_cosmetic_panel(),
+            #html.Div([ html.Pre(id='test-select-data', style={ 'color': app_config.params['font_color'], 'overflowX': 'scroll' } ) ]),     # For testing purposes only!
             html.Div(
-                className='row', 
-                children=[ 
+                className='row',
+                children=[
                     dcc.Markdown(
                         """Queries? [Contact](abalsubr@stanford.edu). Source [repository](https://github.com/kundajelab/encode-ui-sandbox)."""
-                        )], 
+                        )],
                 style={
-                    'textAlign': 'center', 
-                    'color': app_config.params['font_color'], 
+                    'textAlign': 'center',
+                    'color': app_config.params['font_color'],
                     'padding-bottom': '10px'
                 }
-            ), 
+            ),
             dcc.Store(
-                id='stored-pointsets', 
+                id='stored-pointsets',
                 data={ '_current_selected_data': {} }    # Maintained as the short-term state of a point subset.
             )
         ],
-        style={ 
-            'width': '100vw', 
+        style={
+            'width': '100vw',
             'max-width': 'none'
         }
     )
