@@ -322,7 +322,7 @@ def display_results(plot_click_data):
         [html.Tr([html.Th(col) for col in df.columns]) ] +
         # Body
         [html.Tr([
-            html.Td(df.iloc[i][col]) for col in df.columns
+            html.Td(df.iloc[i][col], style={'color':'white'}) for col in df.columns
         ]) for i in range(len(df))]
     )
     #return get_contents_to_df(celltypes, assays)
