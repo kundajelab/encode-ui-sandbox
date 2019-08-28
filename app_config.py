@@ -11,7 +11,8 @@ _DEPLOY_LOCALLY = True
 if not _DEPLOY_LOCALLY:
     data_pfx = '/var/www/encode-ui-sandbox/'
 else:
-    data_pfx = '/Users/kristymualim/encode/ui/encode-ui-sandbox/'
+    data_pfx = '/Users/akshay/github/encode-ui-sandbox/'
+    # data_pfx = '/Users/kristymualim/encode/ui/encode-ui-sandbox/'
 
 params['plot_data_df_path'] = data_pfx + "data/reordered_experiments.csv"
 params['adj_mat_path'] = data_pfx + 'data/encode3_6870_10nn.npz'

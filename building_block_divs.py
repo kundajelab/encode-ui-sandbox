@@ -167,7 +167,10 @@ def create_hm_layout(
     return hm_layout
 
 
-def create_scatter_layout(annotations):
+def create_scatter_layout(
+    annotations, 
+    show_legend=False
+):
     return {
         'margin': { 'l': 0, 'r': 0, 'b': 0, 't': 20},
         'clickmode': 'event+select',  # https://github.com/plotly/plotly.js/pull/2944/
@@ -186,6 +189,7 @@ def create_scatter_layout(annotations):
             'style': {'display': 'none'}
         },
         'legend': style_legend,
+        'showlegend': show_legend,
         'annotations': annotations,
         'plot_bgcolor': app_config.params['bg_color'],
         'paper_bgcolor': app_config.params['bg_color']

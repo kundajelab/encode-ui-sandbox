@@ -161,8 +161,12 @@ def run_update_landscape(
     pointIDs_to_select = highlighted_points if (len(highlighted_points) > 0) else list(subset_store['_current_selected_data'].keys())
     if annotated_points is None:
         annotated_points = []
-    absc_arr = data_df[app_config.params['display_coordinates']['x']] if ~diffmap_embed else data_df[app_config.params['display_coordinates_diffmap']['x']]
-    ordi_arr = data_df[app_config.params['display_coordinates']['y']] if ~diffmap_embed else data_df[app_config.params['display_coordinates_diffmap']['y']]
+    if ~diffmap_embed:
+        absc_arr = data_df[app_config.params['display_coordinates']['x']]
+        ordi_arr = data_df[app_config.params['display_coordinates']['y']]
+    else:
+        absc_arr = data_df[app_config.params['display_coordinates_diffmap']['x']]
+        ordi_arr = data_df[app_config.params['display_coordinates_diffmap']['y']]
     data_df[color_scheme][np.isin(point_names, nbr_points)] = 1
 
     print('Color scheme: {}'.format(color_scheme))
@@ -363,13 +367,17 @@ def update_landscape(
     if plot_click_data is not None:
         expname = plot_click_data['points'][0]['text']
         exp_ndx = np.where(point_names == expname)[0][0]
+        # Now get top few neighbors
         nbrs = point_names[np.where(np.ravel(graph_adj[exp_ndx,:].toarray()) != 0)[0]]
+        data_df['Dummy'][np.isin(point_names, point_names[exp_ndx])] = 1
         data_df['Dummy'][np.isin(point_names, nbrs)] = 2
     else:
         nbrs = []
 
     curr_highlighted = []
-    curr_highlighted = np.logical_or(assay_names == assay_selected, cell_types == celltype_selected)
+    #curr_highlighted = np.where(np.logical_or(assay_names == assay_selected, cell_types == celltype_selected))[0]
+    data_df['Dummy'][np.array(assay_names) == assay_selected] = 3
+    data_df['Dummy'][cell_types == celltype_selected] = 4
 
     return run_update_landscape(
         annotated_points,
